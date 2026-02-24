@@ -1,0 +1,628 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Programs — FlowGolf</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+<style>
+  .filter-bar {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin-bottom: 48px;
+  }
+
+  .filter-btn {
+    padding: 10px 24px;
+    border-radius: 50px;
+    border: 2px solid var(--cream-dark);
+    background: var(--white);
+    font-family: 'Outfit', sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+    color: var(--text);
+  }
+
+  .filter-btn:hover, .filter-btn.active {
+    border-color: var(--green-mid);
+    background: var(--green-pale);
+    color: var(--green-deep);
+  }
+
+  .programs-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 28px;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+
+  .program-card {
+    background: var(--white);
+    border-radius: 20px;
+    overflow: hidden;
+    transition: all 0.4s ease;
+    cursor: pointer;
+    border: 1px solid transparent;
+    text-decoration: none;
+    color: inherit;
+    display: block;
+  }
+
+  .program-card:hover {
+    transform: translateY(-8px);
+    box-shadow: var(--shadow-lg);
+    border-color: var(--green-light);
+  }
+
+  .program-thumb {
+    height: 200px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .program-thumb-bg {
+    width: 100%; height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 56px;
+  }
+
+  .program-thumb-bg.g1 { background: linear-gradient(135deg, #1a3c2a, #2d6a4f); }
+  .program-thumb-bg.g2 { background: linear-gradient(135deg, #2d5a3f, #52b788); }
+  .program-thumb-bg.g3 { background: linear-gradient(135deg, #3a3a3a, #6b6b6b); }
+  .program-thumb-bg.g4 { background: linear-gradient(135deg, #8b6914, #c9a84c); }
+  .program-thumb-bg.g5 { background: linear-gradient(135deg, #1a4a5a, #2d8a9f); }
+  .program-thumb-bg.g6 { background: linear-gradient(135deg, #4a1a3a, #8a2d6a); }
+  .program-thumb-bg.g7 { background: linear-gradient(135deg, #2a3c1a, #6a8f2d); }
+  .program-thumb-bg.g8 { background: linear-gradient(135deg, #3c1a2a, #6a2d4f); }
+  .program-thumb-bg.g9 { background: linear-gradient(135deg, #1a2a3c, #2d4f6a); }
+
+  .program-body { padding: 24px; }
+
+  .program-body h3 {
+    font-family: 'DM Serif Display', serif;
+    font-size: 22px;
+    color: var(--green-deep);
+    margin-bottom: 8px;
+  }
+
+  .program-body p {
+    font-size: 14px;
+    color: var(--text-light);
+    line-height: 1.6;
+    margin-bottom: 16px;
+  }
+
+  .program-meta {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .program-level { display: flex; gap: 3px; }
+
+  .level-dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: var(--cream-dark);
+  }
+
+  .level-dot.active { background: var(--green-mid); }
+
+  .program-price { font-weight: 700; color: var(--green-deep); font-size: 15px; }
+  .program-price small { font-weight: 400; color: var(--text-light); font-size: 12px; }
+
+  /* ─── Video Detail Overlay ─── */
+  .program-detail-overlay {
+    display: none;
+    position: fixed;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0,0,0,0.6);
+    backdrop-filter: blur(8px);
+    z-index: 200;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+  }
+
+  .program-detail-overlay.active { display: flex; }
+
+  .program-detail {
+    background: var(--white);
+    border-radius: 24px;
+    max-width: 800px;
+    width: 100%;
+    max-height: 90vh;
+    overflow-y: auto;
+    position: relative;
+    animation: fadeUp 0.4s ease-out;
+  }
+
+  .detail-video {
+    width: 100%;
+    aspect-ratio: 16/9;
+    border-radius: 24px 24px 0 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+  }
+
+  .detail-video .play-btn {
+    width: 80px; height: 80px;
+    background: rgba(255,255,255,0.2);
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    backdrop-filter: blur(10px);
+    border: 2px solid rgba(255,255,255,0.3);
+    cursor: pointer;
+    transition: all 0.3s;
+  }
+
+  .detail-video .play-btn:hover { background: rgba(255,255,255,0.35); transform: scale(1.1); }
+  .detail-video .play-btn svg { fill: white; margin-left: 4px; }
+
+  .detail-body { padding: 36px; }
+
+  .detail-body h2 {
+    font-family: 'DM Serif Display', serif;
+    font-size: 32px;
+    color: var(--green-deep);
+    margin-bottom: 12px;
+  }
+
+  .detail-body > p {
+    color: var(--text-light);
+    font-size: 16px;
+    line-height: 1.7;
+    margin-bottom: 28px;
+  }
+
+  .detail-meta-row {
+    display: flex;
+    gap: 24px;
+    margin-bottom: 28px;
+    flex-wrap: wrap;
+  }
+
+  .detail-meta-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+    color: var(--text-light);
+  }
+
+  .detail-meta-item strong { color: var(--text); }
+
+  .detail-lessons h3 {
+    font-family: 'DM Serif Display', serif;
+    font-size: 22px;
+    color: var(--green-deep);
+    margin-bottom: 16px;
+  }
+
+  .lesson-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 16px;
+    border-radius: var(--radius-sm);
+    transition: background 0.2s;
+    cursor: pointer;
+  }
+
+  .lesson-item:hover { background: var(--cream); }
+
+  .lesson-left {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+
+  .lesson-num {
+    width: 32px; height: 32px;
+    border-radius: 50%;
+    background: var(--green-pale);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 13px; font-weight: 700;
+    color: var(--green-deep);
+    flex-shrink: 0;
+  }
+
+  .lesson-title { font-size: 14px; font-weight: 500; }
+
+  .lesson-duration {
+    font-size: 13px;
+    color: var(--text-light);
+    flex-shrink: 0;
+  }
+
+  .lesson-lock {
+    opacity: 0.4;
+    font-size: 14px;
+    flex-shrink: 0;
+  }
+
+  .detail-actions {
+    display: flex;
+    gap: 12px;
+    margin-top: 28px;
+    padding-top: 28px;
+    border-top: 1px solid rgba(0,0,0,0.06);
+  }
+
+  .detail-close {
+    position: absolute;
+    top: 20px; right: 20px;
+    width: 40px; height: 40px;
+    border-radius: 50%;
+    background: rgba(0,0,0,0.4);
+    border: none;
+    color: white;
+    font-size: 20px;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    z-index: 5;
+    transition: background 0.2s;
+  }
+
+  .detail-close:hover { background: rgba(0,0,0,0.6); }
+
+  @media (max-width: 1024px) {
+    .programs-grid { grid-template-columns: 1fr 1fr; }
+  }
+
+  @media (max-width: 768px) {
+    .programs-grid { grid-template-columns: 1fr; max-width: 500px; }
+    .detail-body { padding: 24px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a href="index.html" class="logo">
+    <svg class="logo-icon" viewBox="0 0 44 44" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="22" cy="20" r="13" fill="#1a3c2a"/>
+      <circle cx="19" cy="17" r="1.2" fill="#2d6a4f" opacity="0.5"/><circle cx="23" cy="15" r="1.2" fill="#2d6a4f" opacity="0.5"/>
+      <circle cx="21" cy="21" r="1.2" fill="#2d6a4f" opacity="0.5"/><circle cx="25" cy="19" r="1.2" fill="#2d6a4f" opacity="0.5"/>
+      <circle cx="18" cy="22" r="1.2" fill="#2d6a4f" opacity="0.5"/><circle cx="24" cy="23" r="1.2" fill="#2d6a4f" opacity="0.5"/>
+      <path d="M8 32 C12 28, 16 27, 22 28" stroke="#52b788" stroke-width="2" fill="none" stroke-linecap="round"/>
+      <path d="M11 36 C15 32, 20 31, 28 32" stroke="#c9a84c" stroke-width="2" fill="none" stroke-linecap="round" opacity="0.7"/>
+      <path d="M4 38 C10 34, 18 33, 30 35" stroke="#52b788" stroke-width="1.5" fill="none" stroke-linecap="round" opacity="0.4"/>
+    </svg>
+    <div><div class="logo-text">FlowGolf</div><div class="logo-tagline">Move Better, Play Better</div></div>
+  </a>
+  <ul class="nav-links">
+    <li><a href="programs.html" class="active">Programs</a></li>
+    <li><a href="pricing.html">Pricing</a></li>
+    <li><a href="about.html">About</a></li>
+    <li><a href="account.html">My Account</a></li>
+    <li><a href="#" class="btn btn-primary btn-sm" onclick="openModal()">Start Free Trial</a></li>
+  </ul>
+  <button class="nav-toggle" onclick="toggleNav()" aria-label="Menu"><span></span><span></span><span></span></button>
+</nav>
+
+<!-- PAGE HERO -->
+<div class="page-hero">
+  <div class="breadcrumb"><a href="index.html">Home</a> / <span>Programs</span></div>
+  <div class="section-label">Video Library</div>
+  <h1 class="section-title">All Programs</h1>
+  <p class="section-subtitle">Over 200 expert-led video lessons across mobility, strength, recovery, and flexibility. Filter by category to find exactly what your body needs.</p>
+</div>
+
+<!-- FILTERS + GRID -->
+<section style="padding-top: 0;">
+  <div class="filter-bar scroll-reveal">
+    <button class="filter-btn active" onclick="filterPrograms('all', this)">All Programs</button>
+    <button class="filter-btn" onclick="filterPrograms('mobility', this)">Mobility</button>
+    <button class="filter-btn" onclick="filterPrograms('strength', this)">Strength</button>
+    <button class="filter-btn" onclick="filterPrograms('recovery', this)">Recovery</button>
+    <button class="filter-btn" onclick="filterPrograms('flexibility', this)">Flexibility</button>
+    <button class="filter-btn" onclick="filterPrograms('premium', this)">Premium</button>
+  </div>
+
+  <div class="programs-grid" id="programsGrid">
+
+    <div class="program-card scroll-reveal stagger-1" data-category="mobility" onclick="openDetail('golf-mobility')">
+      <div class="program-thumb">
+        <div class="program-thumb-bg g1">🏌️</div>
+        <span class="tag tag-white" style="position:absolute;top:16px;left:16px;">Most Popular</span>
+        <span class="tag tag-dark" style="position:absolute;bottom:16px;right:16px;">24 lessons</span>
+      </div>
+      <div class="program-body">
+        <h3>Golf Mobility Essentials</h3>
+        <p>Unlock your swing with targeted hip, thoracic spine, and shoulder mobility drills designed for golfers.</p>
+        <div class="program-meta">
+          <div class="program-level"><span class="level-dot active"></span><span class="level-dot active"></span><span class="level-dot"></span></div>
+          <div class="program-price">Included <small>with Pro</small></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="program-card scroll-reveal stagger-2" data-category="mobility" onclick="openDetail('pain-free')">
+      <div class="program-thumb">
+        <div class="program-thumb-bg g2">🧘</div>
+        <span class="tag tag-white" style="position:absolute;top:16px;left:16px;">New</span>
+        <span class="tag tag-dark" style="position:absolute;bottom:16px;right:16px;">18 lessons</span>
+      </div>
+      <div class="program-body">
+        <h3>Pain-Free Back & Hips</h3>
+        <p>Relieve chronic lower back and hip tightness with progressive routines you can do in 15 minutes a day.</p>
+        <div class="program-meta">
+          <div class="program-level"><span class="level-dot active"></span><span class="level-dot"></span><span class="level-dot"></span></div>
+          <div class="program-price">Included <small>with Pro</small></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="program-card scroll-reveal stagger-3" data-category="strength" onclick="openDetail('power-distance')">
+      <div class="program-thumb">
+        <div class="program-thumb-bg g3">💪</div>
+        <span class="tag tag-white" style="position:absolute;top:16px;left:16px;">Advanced</span>
+        <span class="tag tag-dark" style="position:absolute;bottom:16px;right:16px;">32 lessons</span>
+      </div>
+      <div class="program-body">
+        <h3>Power & Distance</h3>
+        <p>Build rotational strength and explosive power to maximize clubhead speed and driving distance.</p>
+        <div class="program-meta">
+          <div class="program-level"><span class="level-dot active"></span><span class="level-dot active"></span><span class="level-dot active"></span></div>
+          <div class="program-price">Included <small>with Pro</small></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="program-card scroll-reveal stagger-4" data-category="recovery" onclick="openDetail('post-round')">
+      <div class="program-thumb">
+        <div class="program-thumb-bg g4">🧊</div>
+        <span class="tag tag-white" style="position:absolute;top:16px;left:16px;">Recovery</span>
+        <span class="tag tag-dark" style="position:absolute;bottom:16px;right:16px;">14 lessons</span>
+      </div>
+      <div class="program-body">
+        <h3>Post-Round Recovery</h3>
+        <p>Cool down properly after 18 holes. Targeted stretching and self-massage for faster recovery.</p>
+        <div class="program-meta">
+          <div class="program-level"><span class="level-dot active"></span><span class="level-dot"></span><span class="level-dot"></span></div>
+          <div class="program-price">$29 <small>one-time</small></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="program-card scroll-reveal stagger-5" data-category="flexibility" onclick="openDetail('full-body')">
+      <div class="program-thumb">
+        <div class="program-thumb-bg g5">🔄</div>
+        <span class="tag tag-white" style="position:absolute;top:16px;left:16px;">Bestseller</span>
+        <span class="tag tag-dark" style="position:absolute;bottom:16px;right:16px;">20 lessons</span>
+      </div>
+      <div class="program-body">
+        <h3>Full Body Flexibility</h3>
+        <p>A complete flexibility overhaul — from ankles to shoulders. Feel 10 years younger on the course.</p>
+        <div class="program-meta">
+          <div class="program-level"><span class="level-dot active"></span><span class="level-dot active"></span><span class="level-dot"></span></div>
+          <div class="program-price">Included <small>with Pro</small></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="program-card scroll-reveal stagger-6" data-category="premium" onclick="openDetail('complete-golfer')">
+      <div class="program-thumb">
+        <div class="program-thumb-bg g6">⚡</div>
+        <span class="tag tag-white" style="position:absolute;top:16px;left:16px;">Premium</span>
+        <span class="tag tag-dark" style="position:absolute;bottom:16px;right:16px;">28 lessons</span>
+      </div>
+      <div class="program-body">
+        <h3>The Complete Golfer</h3>
+        <p>Our flagship all-in-one program combining mobility, strength, and mental focus for peak performance.</p>
+        <div class="program-meta">
+          <div class="program-level"><span class="level-dot active"></span><span class="level-dot active"></span><span class="level-dot active"></span></div>
+          <div class="program-price">$49 <small>one-time</small></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="program-card scroll-reveal" data-category="mobility" onclick="openDetail('morning-flow')">
+      <div class="program-thumb">
+        <div class="program-thumb-bg g7">🌅</div>
+        <span class="tag tag-white" style="position:absolute;top:16px;left:16px;">Quick</span>
+        <span class="tag tag-dark" style="position:absolute;bottom:16px;right:16px;">10 lessons</span>
+      </div>
+      <div class="program-body">
+        <h3>Morning Mobility Flow</h3>
+        <p>10-minute morning routines to loosen up your body and prepare for the day or a round of golf.</p>
+        <div class="program-meta">
+          <div class="program-level"><span class="level-dot active"></span><span class="level-dot"></span><span class="level-dot"></span></div>
+          <div class="program-price">Included <small>with Pro</small></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="program-card scroll-reveal" data-category="strength" onclick="openDetail('core-stability')">
+      <div class="program-thumb">
+        <div class="program-thumb-bg g8">🎯</div>
+        <span class="tag tag-white" style="position:absolute;top:16px;left:16px;">Intermediate</span>
+        <span class="tag tag-dark" style="position:absolute;bottom:16px;right:16px;">16 lessons</span>
+      </div>
+      <div class="program-body">
+        <h3>Core Stability for Golf</h3>
+        <p>Strengthen your core for a more stable swing and better balance throughout your entire game.</p>
+        <div class="program-meta">
+          <div class="program-level"><span class="level-dot active"></span><span class="level-dot active"></span><span class="level-dot"></span></div>
+          <div class="program-price">Included <small>with Pro</small></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="program-card scroll-reveal" data-category="recovery" onclick="openDetail('sleep-recovery')">
+      <div class="program-thumb">
+        <div class="program-thumb-bg g9">🌙</div>
+        <span class="tag tag-white" style="position:absolute;top:16px;left:16px;">Wind Down</span>
+        <span class="tag tag-dark" style="position:absolute;bottom:16px;right:16px;">12 lessons</span>
+      </div>
+      <div class="program-body">
+        <h3>Evening Wind-Down</h3>
+        <p>Gentle stretching and breathwork routines to improve sleep quality and accelerate recovery.</p>
+        <div class="program-meta">
+          <div class="program-level"><span class="level-dot active"></span><span class="level-dot"></span><span class="level-dot"></span></div>
+          <div class="program-price">Included <small>with Pro</small></div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- PROGRAM DETAIL OVERLAY -->
+<div class="program-detail-overlay" id="programDetail">
+  <div class="program-detail">
+    <button class="detail-close" onclick="closeDetail()">✕</button>
+    <div class="detail-video g1" id="detailVideo" style="background: linear-gradient(145deg, #1a3c2a, #2d6a4f);">
+      <div class="play-btn"><svg width="28" height="28" viewBox="0 0 24 24"><polygon points="6,3 20,12 6,21"/></svg></div>
+    </div>
+    <div class="detail-body">
+      <h2 id="detailTitle">Golf Mobility Essentials</h2>
+      <p id="detailDesc">Unlock your swing with targeted hip, thoracic spine, and shoulder mobility drills designed specifically for golfers of all levels. This comprehensive program addresses the most common limitations that hold back your swing.</p>
+
+      <div class="detail-meta-row">
+        <div class="detail-meta-item">📚 <strong id="detailLessons">24 lessons</strong></div>
+        <div class="detail-meta-item">⏱ <strong id="detailDuration">~15 min each</strong></div>
+        <div class="detail-meta-item">📊 <strong id="detailLevel">Intermediate</strong></div>
+        <div class="detail-meta-item">👤 <strong>Coach Jordan Reid</strong></div>
+      </div>
+
+      <div class="detail-lessons">
+        <h3>Lesson Preview</h3>
+        <div class="lesson-item">
+          <div class="lesson-left"><div class="lesson-num">1</div><div class="lesson-title">Welcome & Mobility Assessment</div></div>
+          <div class="lesson-duration">8 min</div>
+        </div>
+        <div class="lesson-item">
+          <div class="lesson-left"><div class="lesson-num">2</div><div class="lesson-title">Hip Flexor Release & Activation</div></div>
+          <div class="lesson-duration">14 min</div>
+        </div>
+        <div class="lesson-item">
+          <div class="lesson-left"><div class="lesson-num">3</div><div class="lesson-title">T-Spine Rotation Drill Series</div></div>
+          <div class="lesson-duration">16 min</div>
+        </div>
+        <div class="lesson-item">
+          <div class="lesson-left"><div class="lesson-num">4</div><div class="lesson-title">Shoulder Mobility for Backswing</div></div>
+          <div class="lesson-duration">12 min</div>
+        </div>
+        <div class="lesson-item">
+          <div class="lesson-left"><div class="lesson-num">5</div><div class="lesson-title">Ankle & Foot Stability</div></div>
+          <div class="lesson-duration">10 min</div>
+        </div>
+        <div class="lesson-item" style="opacity: 0.5;">
+          <div class="lesson-left"><div class="lesson-num">6</div><div class="lesson-title">Full Swing Integration Flow</div></div>
+          <div class="lesson-lock">🔒</div>
+        </div>
+        <div class="lesson-item" style="opacity: 0.5;">
+          <div class="lesson-left"><div class="lesson-num">7</div><div class="lesson-title">Pre-Round Warm Up Routine</div></div>
+          <div class="lesson-lock">🔒</div>
+        </div>
+      </div>
+
+      <div class="detail-actions">
+        <a href="#" class="btn btn-primary" onclick="closeDetail(); openModal();">Subscribe to Watch →</a>
+        <a href="pricing.html" class="btn btn-outline">View Pricing</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-grid">
+    <div class="footer-brand">
+      <a href="index.html" class="logo">
+        <svg class="logo-icon" viewBox="0 0 44 44" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="22" cy="20" r="13" fill="#2d6a4f"/>
+          <circle cx="19" cy="17" r="1.2" fill="#52b788" opacity="0.5"/><circle cx="23" cy="15" r="1.2" fill="#52b788" opacity="0.5"/>
+          <circle cx="21" cy="21" r="1.2" fill="#52b788" opacity="0.5"/><circle cx="25" cy="19" r="1.2" fill="#52b788" opacity="0.5"/>
+          <path d="M8 32 C12 28, 16 27, 22 28" stroke="#52b788" stroke-width="2" fill="none" stroke-linecap="round"/>
+          <path d="M11 36 C15 32, 20 31, 28 32" stroke="#c9a84c" stroke-width="2" fill="none" stroke-linecap="round" opacity="0.7"/>
+        </svg>
+        <div><div class="logo-text">FlowGolf</div><div class="logo-tagline">Move Better, Play Better</div></div>
+      </a>
+      <p>Expert mobility and fitness training designed specifically for golfers.</p>
+    </div>
+    <div class="footer-column"><h4>Programs</h4><ul><li><a href="programs.html">Golf Mobility</a></li><li><a href="programs.html">Pain Relief</a></li><li><a href="programs.html">Power & Distance</a></li><li><a href="programs.html">Recovery</a></li></ul></div>
+    <div class="footer-column"><h4>Company</h4><ul><li><a href="about.html">About</a></li><li><a href="about.html">Coaches</a></li><li><a href="about.html">Blog</a></li><li><a href="about.html">Contact</a></li></ul></div>
+    <div class="footer-column"><h4>Account</h4><ul><li><a href="account.html">Dashboard</a></li><li><a href="pricing.html">Pricing</a></li><li><a href="#">Help Center</a></li><li><a href="#">Privacy Policy</a></li></ul></div>
+  </div>
+  <div class="footer-bottom"><span>&copy; 2026 FlowGolf. All rights reserved.</span><span>Made with 💚 for golfers who want to move better.</span></div>
+</footer>
+
+<!-- MODAL -->
+<div class="modal-overlay" id="modal">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal()">✕</button>
+    <h2>Start Your Free Trial</h2>
+    <p>7 days free, then choose a plan. No credit card needed.</p>
+    <div class="form-group"><label>Full Name</label><input type="text" placeholder="John Smith"></div>
+    <div class="form-group"><label>Email</label><input type="email" placeholder="john@example.com"></div>
+    <div class="form-group"><label>Plan</label><select><option>Pro — $24/month (Most Popular)</option><option>Starter — $9/month</option><option>Elite — $59/month</option></select></div>
+    <a href="account.html" class="btn btn-primary">Create Account →</a>
+  </div>
+</div>
+
+<script src="scripts.js"></script>
+<script>
+  // Category filter
+  function filterPrograms(category, btn) {
+    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    document.querySelectorAll('.program-card').forEach(card => {
+      if (category === 'all' || card.dataset.category === category) {
+        card.style.display = '';
+      } else {
+        card.style.display = 'none';
+      }
+    });
+  }
+
+  // Program detail overlay
+  const programData = {
+    'golf-mobility': { title: 'Golf Mobility Essentials', desc: 'Unlock your swing with targeted hip, thoracic spine, and shoulder mobility drills designed specifically for golfers of all levels.', lessons: '24 lessons', duration: '~15 min each', level: 'Intermediate', gradient: 'linear-gradient(145deg, #1a3c2a, #2d6a4f)' },
+    'pain-free': { title: 'Pain-Free Back & Hips', desc: 'Relieve chronic lower back and hip tightness with progressive routines. Designed for golfers who sit at a desk all day.', lessons: '18 lessons', duration: '~15 min each', level: 'Beginner', gradient: 'linear-gradient(145deg, #2d5a3f, #52b788)' },
+    'power-distance': { title: 'Power & Distance', desc: 'Build rotational strength and explosive power to maximize clubhead speed and add yards to every drive.', lessons: '32 lessons', duration: '~20 min each', level: 'Advanced', gradient: 'linear-gradient(145deg, #3a3a3a, #6b6b6b)' },
+    'post-round': { title: 'Post-Round Recovery', desc: 'Cool down properly after 18 holes with targeted stretching and self-massage techniques.', lessons: '14 lessons', duration: '~12 min each', level: 'Beginner', gradient: 'linear-gradient(145deg, #8b6914, #c9a84c)' },
+    'full-body': { title: 'Full Body Flexibility', desc: 'A complete flexibility overhaul from ankles to shoulders. Feel 10 years younger on the course.', lessons: '20 lessons', duration: '~18 min each', level: 'Intermediate', gradient: 'linear-gradient(145deg, #1a4a5a, #2d8a9f)' },
+    'complete-golfer': { title: 'The Complete Golfer', desc: 'Our flagship all-in-one program combining mobility, strength, and mental focus for peak performance.', lessons: '28 lessons', duration: '~25 min each', level: 'Advanced', gradient: 'linear-gradient(145deg, #4a1a3a, #8a2d6a)' },
+    'morning-flow': { title: 'Morning Mobility Flow', desc: '10-minute morning routines to loosen up your body and prepare for the day or a round of golf.', lessons: '10 lessons', duration: '~10 min each', level: 'Beginner', gradient: 'linear-gradient(145deg, #2a3c1a, #6a8f2d)' },
+    'core-stability': { title: 'Core Stability for Golf', desc: 'Strengthen your core for a more stable swing and better balance throughout your entire game.', lessons: '16 lessons', duration: '~18 min each', level: 'Intermediate', gradient: 'linear-gradient(145deg, #3c1a2a, #6a2d4f)' },
+    'sleep-recovery': { title: 'Evening Wind-Down', desc: 'Gentle stretching and breathwork routines to improve sleep quality and accelerate recovery.', lessons: '12 lessons', duration: '~15 min each', level: 'Beginner', gradient: 'linear-gradient(145deg, #1a2a3c, #2d4f6a)' },
+  };
+
+  function openDetail(id) {
+    const data = programData[id];
+    if (!data) return;
+    document.getElementById('detailTitle').textContent = data.title;
+    document.getElementById('detailDesc').textContent = data.desc;
+    document.getElementById('detailLessons').textContent = data.lessons;
+    document.getElementById('detailDuration').textContent = data.duration;
+    document.getElementById('detailLevel').textContent = data.level;
+    document.getElementById('detailVideo').style.background = data.gradient;
+    document.getElementById('programDetail').classList.add('active');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeDetail() {
+    document.getElementById('programDetail').classList.remove('active');
+    document.body.style.overflow = '';
+  }
+
+  document.getElementById('programDetail').addEventListener('click', (e) => {
+    if (e.target === e.currentTarget) closeDetail();
+  });
+</script>
+</body>
+</html>

@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pricing — FlowGolf</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+<style>
+  .pricing-toggle {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+    margin-bottom: 56px;
+  }
+
+  .pricing-toggle span { font-size: 15px; font-weight: 500; color: var(--text-light); }
+  .pricing-toggle span.active { color: var(--green-deep); font-weight: 600; }
+
+  .toggle-switch {
+    width: 56px; height: 30px;
+    background: var(--cream-dark);
+    border-radius: 50px;
+    position: relative;
+    cursor: pointer;
+    transition: background 0.3s;
+  }
+
+  .toggle-switch.active { background: var(--green-mid); }
+
+  .toggle-switch::after {
+    content: '';
+    position: absolute;
+    top: 3px; left: 3px;
+    width: 24px; height: 24px;
+    background: white;
+    border-radius: 50%;
+    transition: transform 0.3s;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+  }
+
+  .toggle-switch.active::after { transform: translateX(26px); }
+
+  .save-badge {
+    background: var(--accent-light);
+    color: #8b6914;
+    padding: 4px 12px;
+    border-radius: 50px;
+    font-size: 12px;
+    font-weight: 700;
+  }
+
+  .pricing-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 28px;
+    max-width: 1100px;
+    margin: 0 auto 80px;
+  }
+
+  .pricing-card {
+    background: var(--white);
+    border-radius: 24px;
+    padding: 40px 32px;
+    text-align: center;
+    border: 2px solid transparent;
+    transition: all 0.4s ease;
+    position: relative;
+  }
+
+  .pricing-card:hover { transform: translateY(-6px); box-shadow: var(--shadow-lg); }
+
+  .pricing-card.featured {
+    border-color: var(--green-mid);
+    background: var(--green-deep);
+    color: var(--white);
+  }
+
+  .pricing-popular {
+    position: absolute;
+    top: -14px; left: 50%; transform: translateX(-50%);
+    background: var(--accent);
+    color: var(--charcoal);
+    padding: 6px 20px;
+    border-radius: 50px;
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+
+  .pricing-icon { font-size: 40px; margin-bottom: 20px; }
+
+  .pricing-name {
+    font-family: 'DM Serif Display', serif;
+    font-size: 26px;
+    margin-bottom: 8px;
+  }
+
+  .pricing-card.featured .pricing-name { color: var(--white); }
+
+  .pricing-desc { font-size: 14px; color: var(--text-light); margin-bottom: 28px; line-height: 1.6; }
+  .pricing-card.featured .pricing-desc { color: rgba(255,255,255,0.6); }
+
+  .pricing-amount {
+    font-family: 'DM Serif Display', serif;
+    font-size: 52px;
+    color: var(--green-deep);
+    margin-bottom: 4px;
+  }
+
+  .pricing-card.featured .pricing-amount { color: var(--white); }
+  .pricing-amount sup { font-size: 24px; top: -16px; }
+
+  .pricing-period { font-size: 14px; color: var(--text-light); margin-bottom: 32px; }
+  .pricing-card.featured .pricing-period { color: rgba(255,255,255,0.5); }
+
+  .pricing-features { list-style: none; text-align: left; margin-bottom: 36px; }
+
+  .pricing-features li {
+    padding: 10px 0;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    border-bottom: 1px solid rgba(0,0,0,0.05);
+  }
+
+  .pricing-card.featured .pricing-features li { border-color: rgba(255,255,255,0.08); color: rgba(255,255,255,0.85); }
+
+  .check {
+    width: 22px; height: 22px;
+    background: var(--green-pale);
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+
+  .pricing-card.featured .check { background: rgba(82,183,136,0.2); }
+  .check svg { width: 12px; height: 12px; }
+
+  .pricing-card .btn { width: 100%; justify-content: center; }
+
+  /* ─── FAQ ─── */
+  .faq-section { max-width: 760px; margin: 0 auto; }
+
+  .faq-item {
+    border-bottom: 1px solid rgba(0,0,0,0.08);
+    padding: 24px 0;
+  }
+
+  .faq-question {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    cursor: pointer;
+    gap: 16px;
+  }
+
+  .faq-question h3 {
+    font-family: 'DM Serif Display', serif;
+    font-size: 20px;
+    color: var(--green-deep);
+  }
+
+  .faq-toggle {
+    width: 32px; height: 32px;
+    border-radius: 50%;
+    background: var(--cream);
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+    font-size: 20px;
+    color: var(--green-mid);
+    transition: all 0.3s;
+  }
+
+  .faq-item.open .faq-toggle { transform: rotate(45deg); background: var(--green-pale); }
+
+  .faq-answer {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.4s ease, padding 0.4s ease;
+  }
+
+  .faq-item.open .faq-answer { max-height: 300px; padding-top: 16px; }
+
+  .faq-answer p { font-size: 15px; color: var(--text-light); line-height: 1.7; }
+
+  /* ─── GUARANTEE ─── */
+  .guarantee-banner {
+    background: var(--green-deep);
+    color: var(--white);
+    text-align: center;
+    padding: 60px 48px;
+    margin-top: 80px;
+  }
+
+  .guarantee-banner h2 {
+    font-family: 'DM Serif Display', serif;
+    font-size: 32px;
+    margin-bottom: 12px;
+  }
+
+  .guarantee-banner p {
+    color: rgba(255,255,255,0.65);
+    font-size: 16px;
+    max-width: 500px;
+    margin: 0 auto;
+  }
+
+  @media (max-width: 1024px) { .pricing-grid { grid-template-columns: 1fr 1fr; } }
+
+  @media (max-width: 768px) {
+    .pricing-grid { grid-template-columns: 1fr; max-width: 440px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a href="index.html" class="logo">
+    <svg class="logo-icon" viewBox="0 0 44 44" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="22" cy="20" r="13" fill="#1a3c2a"/>
+      <circle cx="19" cy="17" r="1.2" fill="#2d6a4f" opacity="0.5"/><circle cx="23" cy="15" r="1.2" fill="#2d6a4f" opacity="0.5"/>
+      <circle cx="21" cy="21" r="1.2" fill="#2d6a4f" opacity="0.5"/><circle cx="25" cy="19" r="1.2" fill="#2d6a4f" opacity="0.5"/>
+      <circle cx="18" cy="22" r="1.2" fill="#2d6a4f" opacity="0.5"/><circle cx="24" cy="23" r="1.2" fill="#2d6a4f" opacity="0.5"/>
+      <path d="M8 32 C12 28, 16 27, 22 28" stroke="#52b788" stroke-width="2" fill="none" stroke-linecap="round"/>
+      <path d="M11 36 C15 32, 20 31, 28 32" stroke="#c9a84c" stroke-width="2" fill="none" stroke-linecap="round" opacity="0.7"/>
+      <path d="M4 38 C10 34, 18 33, 30 35" stroke="#52b788" stroke-width="1.5" fill="none" stroke-linecap="round" opacity="0.4"/>
+    </svg>
+    <div><div class="logo-text">FlowGolf</div><div class="logo-tagline">Move Better, Play Better</div></div>
+  </a>
+  <ul class="nav-links">
+    <li><a href="programs.html">Programs</a></li>
+    <li><a href="pricing.html" class="active">Pricing</a></li>
+    <li><a href="about.html">About</a></li>
+    <li><a href="account.html">My Account</a></li>
+    <li><a href="#" class="btn btn-primary btn-sm" onclick="openModal()">Start Free Trial</a></li>
+  </ul>
+  <button class="nav-toggle" onclick="toggleNav()" aria-label="Menu"><span></span><span></span><span></span></button>
+</nav>
+
+<!-- PAGE HERO -->
+<div class="page-hero">
+  <div class="breadcrumb"><a href="index.html">Home</a> / <span>Pricing</span></div>
+  <div class="section-label">Pricing</div>
+  <h1 class="section-title">Invest in Your Game</h1>
+  <p class="section-subtitle">Simple, transparent pricing. Start with a free trial and upgrade when you're ready. Cancel anytime.</p>
+</div>
+
+<!-- PRICING -->
+<section style="padding-top: 20px;">
+  <div class="pricing-toggle scroll-reveal">
+    <span class="active" id="monthlyLabel">Monthly</span>
+    <div class="toggle-switch" id="billingToggle" onclick="toggleBilling()"></div>
+    <span id="annualLabel">Annual</span>
+    <span class="save-badge">Save 25%</span>
+  </div>
+
+  <div class="pricing-grid">
+    <div class="pricing-card scroll-reveal">
+      <div class="pricing-icon">🎯</div>
+      <div class="pricing-name">Starter</div>
+      <p class="pricing-desc">Perfect for trying golf-specific mobility training at home.</p>
+      <div class="pricing-amount"><sup>$</sup><span class="price-value">9</span></div>
+      <div class="pricing-period">per month</div>
+      <ul class="pricing-features">
+        <li><span class="check"><svg viewBox="0 0 12 12"><polyline points="1.5 6 4.5 9 10.5 3" fill="none" stroke="#2d6a4f" stroke-width="2" stroke-linecap="round"/></svg></span> 3 starter programs</li>
+        <li><span class="check"><svg viewBox="0 0 12 12"><polyline points="1.5 6 4.5 9 10.5 3" fill="none" stroke="#2d6a4f" stroke-width="2" stroke-linecap="round"/></svg></span> New weekly routines</li>
+        <li><span class="check"><svg viewBox="0 0 12 12"><polyline points="1.5 6 4.5 9 10.5 3" fill="none" stroke="#2d6a4f" stroke-width="2" stroke-linecap="round"/></svg></span> Mobile & TV streaming</li>
+        <li><span class="check"><svg viewBox="0 0 12 12"><polyline points="1.5 6 4.5 9 10.5 3" fill="none" stroke="#2d6a4f" stroke-width="2" stroke-linecap="round"/></svg></span> Progress tracking</li>
+      </ul>
+      <a href="#" class="btn btn-outline" onclick="openModal()">Get Started</a>
+    </div>
+
+    <div class="pricing-card featured scroll-reveal">
+      <div class="pricing-popular">Most Popular</div>
+      <div class="pricing-icon">🏆</div>
+      <div class="pricing-name">Pro</div>
+      <p class="pricing-desc">Full access to every program, plus personalized guidance.</p>
+      <div class="pricing-amount"><sup>$</sup><span class="price-value">24</span></div>
+      <div class="pricing-period">per month</div>
+      <ul class="pricing-features">
+        <li><span class="check"><svg viewBox="0 0 12 12"><polyline points="1.5 6 4.5 9 10.5 3" fill="none" stroke="#52b788" stroke-width="2" stroke-linecap="round"/></svg></span> All 200+ video lessons</li>
+        <li><span class="check"><svg viewBox="0 0 12 12"><polyline points="1.5 6 4.5 9 10.5 3" fill="none" stroke="#52b788" stroke-width="2" stroke-linecap="round"/></svg></span> Personalized program</li>
+        <li><span class="check"><svg viewBox="0 0 12 12"><polyline points="1.5 6 4.5 9 10.5 3" fill="none" stroke="#52b788" stroke-width="2" stroke-linecap="round"/></svg></span> Downloadable routines</li>
+        <li><span class="check"><svg viewBox="0 0 12 12"><polyline points="1.5 6 4.5 9 10.5 3" fill="none" stroke="#52b788" stroke-width="2" stroke-linecap="round"/></svg></span> Community access</li>
+        <li><span class="check"><svg viewBox="0 0 12 12"><polyline points="1.5 6 4.5 9 10.5 3" fill="none" stroke="#52b788" stroke-width="2" stroke-linecap="round"/></svg></span> Monthly live Q&A</li>
+      </ul>
+      <a href="#" class="btn btn-accent" onclick="openModal()">Start Free Trial →</a>
+    </div>
+
+    <div class="pricing-card scroll-reveal">
+      <div class="pricing-icon">🥇</div>
+      <div class="pricing-name">Elite</div>
+      <p class="pricing-desc">For serious golfers wanting 1-on-1 coaching and custom plans.</p>
+      <div class="pricing-amount"><sup>$</sup><span class="price-value">59</span></div>
+      <div class="pricing-period">per month</div>
+      <ul class="pricing-features">
+        <li><span class="check"><svg viewBox="0 0 12 12"><polyline points="1.5 6 4.5 9 10.5 3" fill="none" stroke="#2d6a4f" stroke-width="2" stroke-linecap="round"/></svg></span> Everything in Pro</li>
+        <li><span class="check"><svg viewBox="0 0 12 12"><polyline points="1.5 6 4.5 9 10.5 3" fill="none" stroke="#2d6a4f" stroke-width="2" stroke-linecap="round"/></svg></span> 1-on-1 video coaching</li>
+        <li><span class="check"><svg viewBox="0 0 12 12"><polyline points="1.5 6 4.5 9 10.5 3" fill="none" stroke="#2d6a4f" stroke-width="2" stroke-linecap="round"/></svg></span> Custom program design</li>
+        <li><span class="check"><svg viewBox="0 0 12 12"><polyline points="1.5 6 4.5 9 10.5 3" fill="none" stroke="#2d6a4f" stroke-width="2" stroke-linecap="round"/></svg></span> Swing analysis review</li>
+        <li><span class="check"><svg viewBox="0 0 12 12"><polyline points="1.5 6 4.5 9 10.5 3" fill="none" stroke="#2d6a4f" stroke-width="2" stroke-linecap="round"/></svg></span> Priority support</li>
+      </ul>
+      <a href="#" class="btn btn-outline" onclick="openModal()">Get Started</a>
+    </div>
+  </div>
+
+  <!-- FAQ -->
+  <div class="section-header scroll-reveal">
+    <div class="section-label">FAQ</div>
+    <h2 class="section-title">Common Questions</h2>
+  </div>
+
+  <div class="faq-section">
+    <div class="faq-item scroll-reveal">
+      <div class="faq-question" onclick="toggleFaq(this)">
+        <h3>How does the 7-day free trial work?</h3>
+        <div class="faq-toggle">+</div>
+      </div>
+      <div class="faq-answer"><p>Sign up with just your name and email — no credit card required. You'll get full Pro access for 7 days. After the trial, choose a plan or your access will pause until you subscribe.</p></div>
+    </div>
+    <div class="faq-item scroll-reveal">
+      <div class="faq-question" onclick="toggleFaq(this)">
+        <h3>Can I cancel anytime?</h3>
+        <div class="faq-toggle">+</div>
+      </div>
+      <div class="faq-answer"><p>Absolutely. There are no contracts or commitments. Cancel from your account dashboard at any time and you'll retain access until the end of your billing period.</p></div>
+    </div>
+    <div class="faq-item scroll-reveal">
+      <div class="faq-question" onclick="toggleFaq(this)">
+        <h3>Do I need equipment?</h3>
+        <div class="faq-toggle">+</div>
+      </div>
+      <div class="faq-answer"><p>Most programs require zero equipment. Some advanced strength sessions may use a resistance band or light dumbbells, but we always provide bodyweight alternatives.</p></div>
+    </div>
+    <div class="faq-item scroll-reveal">
+      <div class="faq-question" onclick="toggleFaq(this)">
+        <h3>What's the difference between one-time purchase and subscription?</h3>
+        <div class="faq-toggle">+</div>
+      </div>
+      <div class="faq-answer"><p>Most programs are included with a Pro or Elite subscription. A few premium programs can also be purchased individually for one-time, lifetime access — no subscription required.</p></div>
+    </div>
+    <div class="faq-item scroll-reveal">
+      <div class="faq-question" onclick="toggleFaq(this)">
+        <h3>Is this suitable for seniors or beginners?</h3>
+        <div class="faq-toggle">+</div>
+      </div>
+      <div class="faq-answer"><p>Yes! We have programs for every level from beginner to advanced. Many of our members are 50+ and our beginner programs are specifically designed to be gentle yet effective. We always provide modifications.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- GUARANTEE -->
+<div class="guarantee-banner scroll-reveal">
+  <div style="font-size: 48px; margin-bottom: 16px;">🛡️</div>
+  <h2>30-Day Money-Back Guarantee</h2>
+  <p>Not seeing results? We'll give you a full refund within your first 30 days. No questions asked.</p>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-grid">
+    <div class="footer-brand">
+      <a href="index.html" class="logo">
+        <svg class="logo-icon" viewBox="0 0 44 44" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="22" cy="20" r="13" fill="#2d6a4f"/>
+          <circle cx="19" cy="17" r="1.2" fill="#52b788" opacity="0.5"/><circle cx="23" cy="15" r="1.2" fill="#52b788" opacity="0.5"/>
+          <circle cx="21" cy="21" r="1.2" fill="#52b788" opacity="0.5"/><circle cx="25" cy="19" r="1.2" fill="#52b788" opacity="0.5"/>
+          <path d="M8 32 C12 28, 16 27, 22 28" stroke="#52b788" stroke-width="2" fill="none" stroke-linecap="round"/>
+          <path d="M11 36 C15 32, 20 31, 28 32" stroke="#c9a84c" stroke-width="2" fill="none" stroke-linecap="round" opacity="0.7"/>
+        </svg>
+        <div><div class="logo-text">FlowGolf</div><div class="logo-tagline">Move Better, Play Better</div></div>
+      </a>
+      <p>Expert mobility and fitness training designed specifically for golfers.</p>
+    </div>
+    <div class="footer-column"><h4>Programs</h4><ul><li><a href="programs.html">Golf Mobility</a></li><li><a href="programs.html">Pain Relief</a></li><li><a href="programs.html">Power & Distance</a></li></ul></div>
+    <div class="footer-column"><h4>Company</h4><ul><li><a href="about.html">About</a></li><li><a href="about.html">Coaches</a></li><li><a href="about.html">Contact</a></li></ul></div>
+    <div class="footer-column"><h4>Account</h4><ul><li><a href="account.html">Dashboard</a></li><li><a href="pricing.html">Pricing</a></li><li><a href="#">Help Center</a></li></ul></div>
+  </div>
+  <div class="footer-bottom"><span>&copy; 2026 FlowGolf. All rights reserved.</span><span>Made with 💚 for golfers who want to move better.</span></div>
+</footer>
+
+<!-- MODAL -->
+<div class="modal-overlay" id="modal">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal()">✕</button>
+    <h2>Start Your Free Trial</h2>
+    <p>7 days free, then choose a plan. No credit card needed.</p>
+    <div class="form-group"><label>Full Name</label><input type="text" placeholder="John Smith"></div>
+    <div class="form-group"><label>Email</label><input type="email" placeholder="john@example.com"></div>
+    <div class="form-group"><label>Plan</label><select><option>Pro — $24/month (Most Popular)</option><option>Starter — $9/month</option><option>Elite — $59/month</option></select></div>
+    <a href="account.html" class="btn btn-primary">Create Account →</a>
+  </div>
+</div>
+
+<script src="scripts.js"></script>
+<script>
+  // Billing toggle
+  let isAnnual = false;
+  const monthlyPrices = [9, 24, 59];
+  const annualPrices = [7, 18, 44];
+
+  function toggleBilling() {
+    isAnnual = !isAnnual;
+    document.getElementById('billingToggle').classList.toggle('active');
+    document.getElementById('monthlyLabel').classList.toggle('active');
+    document.getElementById('annualLabel').classList.toggle('active');
+    const prices = isAnnual ? annualPrices : monthlyPrices;
+    document.querySelectorAll('.price-value').forEach((el, i) => {
+      el.textContent = prices[i];
+    });
+    document.querySelectorAll('.pricing-period').forEach(el => {
+      el.textContent = isAnnual ? 'per month, billed annually' : 'per month';
+    });
+  }
+
+  // FAQ accordion
+  function toggleFaq(el) {
+    el.closest('.faq-item').classList.toggle('open');
+  }
+</script>
+</body>
+</html>

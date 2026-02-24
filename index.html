@@ -1,0 +1,552 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FlowGolf — Mobility & Performance From Home</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+<style>
+  /* ─── HERO (homepage only) ─── */
+  .hero {
+    min-height: 100vh;
+    padding: 140px 48px 80px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 60px;
+    align-items: center;
+    max-width: 1400px;
+    margin: 0 auto;
+  }
+
+  .hero-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--green-pale);
+    color: var(--green-deep);
+    padding: 8px 18px;
+    border-radius: 50px;
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    margin-bottom: 28px;
+    animation: fadeUp 0.6s ease-out both;
+  }
+
+  .hero h1 {
+    font-family: 'DM Serif Display', serif;
+    font-size: clamp(44px, 5vw, 72px);
+    line-height: 1.08;
+    color: var(--green-deep);
+    margin-bottom: 24px;
+    animation: fadeUp 0.6s ease-out 0.1s both;
+  }
+
+  .hero h1 em { font-style: italic; color: var(--green-mid); }
+
+  .hero-description {
+    font-size: 19px;
+    color: var(--text-light);
+    max-width: 520px;
+    line-height: 1.7;
+    margin-bottom: 40px;
+    animation: fadeUp 0.6s ease-out 0.2s both;
+  }
+
+  .hero-ctas {
+    display: flex;
+    gap: 16px;
+    animation: fadeUp 0.6s ease-out 0.3s both;
+  }
+
+  .hero-stats {
+    display: flex;
+    gap: 48px;
+    margin-top: 56px;
+    padding-top: 36px;
+    border-top: 1px solid rgba(0,0,0,0.08);
+    animation: fadeUp 0.6s ease-out 0.4s both;
+  }
+
+  .stat-number {
+    font-family: 'DM Serif Display', serif;
+    font-size: 36px;
+    color: var(--green-deep);
+  }
+
+  .stat-label {
+    font-size: 13px;
+    color: var(--text-light);
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    font-weight: 500;
+    margin-top: 4px;
+  }
+
+  .hero-visual {
+    position: relative;
+    animation: fadeUp 0.8s ease-out 0.2s both;
+  }
+
+  .hero-card {
+    background: var(--white);
+    border-radius: 24px;
+    padding: 32px;
+    box-shadow: var(--shadow-lg);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .hero-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 6px;
+    background: linear-gradient(90deg, var(--green-mid), var(--green-light), var(--accent));
+  }
+
+  .hero-video-placeholder {
+    width: 100%;
+    aspect-ratio: 16/10;
+    background: linear-gradient(145deg, var(--green-deep) 0%, #2d5a3f 50%, var(--green-mid) 100%);
+    border-radius: var(--radius);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .hero-video-placeholder::before {
+    content: '';
+    position: absolute;
+    width: 300px; height: 300px;
+    background: radial-gradient(circle, rgba(82,183,136,0.3), transparent 70%);
+    top: -50px; right: -50px;
+  }
+
+  .play-btn {
+    width: 72px; height: 72px;
+    background: rgba(255,255,255,0.15);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    backdrop-filter: blur(10px);
+    border: 2px solid rgba(255,255,255,0.3);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    z-index: 2;
+  }
+
+  .play-btn:hover { background: rgba(255,255,255,0.25); transform: scale(1.1); }
+  .play-btn svg { fill: white; margin-left: 4px; }
+
+  .hero-video-label {
+    color: rgba(255,255,255,0.8);
+    font-size: 14px;
+    font-weight: 500;
+    margin-top: 16px;
+    z-index: 2;
+  }
+
+  .hero-card-meta {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 20px;
+  }
+
+  .hero-card-info { display: flex; align-items: center; gap: 12px; }
+  .hero-card-info-text span { display: block; font-weight: 600; font-size: 14px; }
+  .hero-card-info-text small { color: var(--text-light); font-size: 12px; }
+
+  .duration-badge {
+    background: var(--green-pale);
+    color: var(--green-deep);
+    padding: 6px 14px;
+    border-radius: 50px;
+    font-size: 13px;
+    font-weight: 600;
+  }
+
+  .float-element {
+    position: absolute;
+    background: var(--white);
+    border-radius: var(--radius-sm);
+    padding: 14px 20px;
+    box-shadow: var(--shadow);
+    font-size: 13px;
+    font-weight: 600;
+    animation: float 3s ease-in-out infinite;
+    z-index: 3;
+  }
+
+  .float-1 { top: 20px; right: -20px; }
+  .float-2 { bottom: 40px; left: -30px; animation-delay: 1.5s; }
+  .float-element .float-icon { font-size: 20px; margin-right: 8px; }
+
+  /* ─── HOME FEATURES STRIP ─── */
+  .features-strip {
+    background: var(--white);
+    padding: 64px 48px;
+    border-top: 1px solid rgba(0,0,0,0.04);
+    border-bottom: 1px solid rgba(0,0,0,0.04);
+  }
+
+  .features-strip-inner {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 40px;
+    max-width: 1200px;
+    margin: 0 auto;
+    text-align: center;
+  }
+
+  .feature-item { display: flex; flex-direction: column; align-items: center; gap: 12px; }
+  .feature-icon { font-size: 32px; }
+  .feature-item h4 { font-size: 15px; font-weight: 600; color: var(--green-deep); }
+  .feature-item p { font-size: 13px; color: var(--text-light); max-width: 220px; }
+
+  /* ─── HOME PROGRAMS PREVIEW ─── */
+  .programs-preview { background: var(--cream); }
+
+  .programs-grid-home {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 28px;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+
+  .program-card-home {
+    background: var(--white);
+    border-radius: 20px;
+    overflow: hidden;
+    transition: all 0.4s ease;
+    cursor: pointer;
+    border: 1px solid transparent;
+    text-decoration: none;
+    color: inherit;
+    display: block;
+  }
+
+  .program-card-home:hover {
+    transform: translateY(-8px);
+    box-shadow: var(--shadow-lg);
+    border-color: var(--green-light);
+  }
+
+  .program-thumb {
+    height: 200px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .program-thumb-bg {
+    width: 100%; height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 56px;
+  }
+
+  .program-thumb-bg.golf { background: linear-gradient(135deg, #1a3c2a, #2d6a4f); }
+  .program-thumb-bg.mobility { background: linear-gradient(135deg, #2d5a3f, #52b788); }
+  .program-thumb-bg.strength { background: linear-gradient(135deg, #3a3a3a, #6b6b6b); }
+
+  .program-body { padding: 24px; }
+  .program-body h3 {
+    font-family: 'DM Serif Display', serif;
+    font-size: 22px;
+    color: var(--green-deep);
+    margin-bottom: 8px;
+  }
+  .program-body p { font-size: 14px; color: var(--text-light); line-height: 1.6; }
+
+  .view-all-row {
+    text-align: center;
+    margin-top: 48px;
+  }
+
+  /* ─── CTA ─── */
+  .cta-section {
+    background: linear-gradient(135deg, var(--green-deep) 0%, #2d5a3f 100%);
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .cta-section::before {
+    content: '';
+    position: absolute;
+    width: 800px; height: 800px;
+    background: radial-gradient(circle, rgba(201,168,76,0.08), transparent 70%);
+    bottom: -400px; left: 50%; transform: translateX(-50%);
+  }
+
+  .cta-section .section-title { color: var(--white); max-width: 700px; margin: 0 auto 20px; }
+  .cta-section .section-subtitle { color: rgba(255,255,255,0.65); max-width: 500px; margin: 0 auto 40px; }
+
+  .cta-buttons {
+    display: flex;
+    gap: 16px;
+    justify-content: center;
+    position: relative;
+    z-index: 2;
+  }
+
+  @media (max-width: 1024px) {
+    .hero { grid-template-columns: 1fr; padding: 120px 32px 60px; }
+    .hero-visual { max-width: 600px; margin: 0 auto; }
+    .programs-grid-home { grid-template-columns: 1fr 1fr; }
+    .features-strip-inner { grid-template-columns: 1fr 1fr; }
+  }
+
+  @media (max-width: 768px) {
+    .hero { padding: 100px 24px 48px; }
+    .programs-grid-home { grid-template-columns: 1fr; max-width: 500px; }
+    .features-strip-inner { grid-template-columns: 1fr; }
+    .hero-stats { gap: 28px; }
+    .hero-ctas { flex-direction: column; }
+    .hero-ctas .btn { width: 100%; justify-content: center; }
+    .cta-buttons { flex-direction: column; align-items: center; }
+    .float-element { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ─── NAV ─── -->
+<nav>
+  <a href="index.html" class="logo">
+    <svg class="logo-icon" viewBox="0 0 44 44" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="22" cy="20" r="13" fill="#1a3c2a"/>
+      <circle cx="19" cy="17" r="1.2" fill="#2d6a4f" opacity="0.5"/>
+      <circle cx="23" cy="15" r="1.2" fill="#2d6a4f" opacity="0.5"/>
+      <circle cx="21" cy="21" r="1.2" fill="#2d6a4f" opacity="0.5"/>
+      <circle cx="25" cy="19" r="1.2" fill="#2d6a4f" opacity="0.5"/>
+      <circle cx="18" cy="22" r="1.2" fill="#2d6a4f" opacity="0.5"/>
+      <circle cx="24" cy="23" r="1.2" fill="#2d6a4f" opacity="0.5"/>
+      <path d="M8 32 C12 28, 16 27, 22 28" stroke="#52b788" stroke-width="2" fill="none" stroke-linecap="round"/>
+      <path d="M11 36 C15 32, 20 31, 28 32" stroke="#c9a84c" stroke-width="2" fill="none" stroke-linecap="round" opacity="0.7"/>
+      <path d="M4 38 C10 34, 18 33, 30 35" stroke="#52b788" stroke-width="1.5" fill="none" stroke-linecap="round" opacity="0.4"/>
+    </svg>
+    <div>
+      <div class="logo-text">FlowGolf</div>
+      <div class="logo-tagline">Move Better, Play Better</div>
+    </div>
+  </a>
+  <ul class="nav-links">
+    <li><a href="programs.html">Programs</a></li>
+    <li><a href="pricing.html">Pricing</a></li>
+    <li><a href="about.html">About</a></li>
+    <li><a href="account.html">My Account</a></li>
+    <li><a href="#" class="btn btn-primary btn-sm" onclick="openModal()">Start Free Trial</a></li>
+  </ul>
+  <button class="nav-toggle" onclick="toggleNav()" aria-label="Menu">
+    <span></span><span></span><span></span>
+  </button>
+</nav>
+
+<!-- ─── HERO ─── -->
+<section class="hero">
+  <div class="hero-content">
+    <div class="hero-badge"><span>⛳</span> Golf-Focused Mobility Training</div>
+    <h1>Find Your <em>Flow</em><br>From Home</h1>
+    <p class="hero-description">Expert-guided mobility, flexibility, and strength programs designed for golfers. Relieve pain, increase your range of motion, and add yards to your drive — all from your living room.</p>
+    <div class="hero-ctas">
+      <a href="#" class="btn btn-primary" onclick="openModal()">Start 7-Day Free Trial →</a>
+      <a href="programs.html" class="btn btn-outline">Browse Programs</a>
+    </div>
+    <div class="hero-stats">
+      <div><div class="stat-number">200+</div><div class="stat-label">Video Lessons</div></div>
+      <div><div class="stat-number">12K</div><div class="stat-label">Active Members</div></div>
+      <div><div class="stat-number">4.9★</div><div class="stat-label">Member Rating</div></div>
+    </div>
+  </div>
+  <div class="hero-visual">
+    <div class="float-element float-1"><span class="float-icon">🔥</span> 12-min Hip Opener</div>
+    <div class="float-element float-2"><span class="float-icon">📈</span> +18 yds avg gain</div>
+    <div class="hero-card">
+      <div class="hero-video-placeholder">
+        <div class="play-btn"><svg width="24" height="24" viewBox="0 0 24 24"><polygon points="6,3 20,12 6,21"/></svg></div>
+        <div class="hero-video-label">Preview: Morning Mobility Flow</div>
+      </div>
+      <div class="hero-card-meta">
+        <div class="hero-card-info">
+          <div class="avatar">JR</div>
+          <div class="hero-card-info-text"><span>Coach Jordan Reid</span><small>PGA Performance Coach</small></div>
+        </div>
+        <div class="duration-badge">18 min</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── FEATURES STRIP ─── -->
+<div class="features-strip scroll-reveal">
+  <div class="features-strip-inner">
+    <div class="feature-item">
+      <div class="feature-icon">🏠</div>
+      <h4>Train From Home</h4>
+      <p>No gym or equipment required. Just your body and 15 minutes.</p>
+    </div>
+    <div class="feature-item">
+      <div class="feature-icon">📱</div>
+      <h4>Any Device</h4>
+      <p>Stream on phone, tablet, laptop, or TV. Take it anywhere.</p>
+    </div>
+    <div class="feature-item">
+      <div class="feature-icon">🎯</div>
+      <h4>Golf-Specific</h4>
+      <p>Every drill is designed to improve your swing and on-course performance.</p>
+    </div>
+    <div class="feature-item">
+      <div class="feature-icon">📊</div>
+      <h4>Track Progress</h4>
+      <p>See your mobility scores improve week over week with our tracking tools.</p>
+    </div>
+  </div>
+</div>
+
+<!-- ─── PROGRAMS PREVIEW ─── -->
+<section class="programs-preview">
+  <div class="section-header scroll-reveal">
+    <div class="section-label">Programs</div>
+    <h2 class="section-title">Train Smarter, Not Harder</h2>
+    <p class="section-subtitle">Structured programs built by PGA-certified coaches and mobility specialists.</p>
+  </div>
+  <div class="programs-grid-home">
+    <a href="programs.html" class="program-card-home scroll-reveal stagger-1">
+      <div class="program-thumb">
+        <div class="program-thumb-bg golf">🏌️</div>
+        <span class="tag tag-white" style="position:absolute;top:16px;left:16px;">Most Popular</span>
+        <span class="tag tag-dark" style="position:absolute;bottom:16px;right:16px;">24 lessons</span>
+      </div>
+      <div class="program-body">
+        <h3>Golf Mobility Essentials</h3>
+        <p>Unlock your swing with targeted hip, thoracic spine, and shoulder mobility drills.</p>
+      </div>
+    </a>
+    <a href="programs.html" class="program-card-home scroll-reveal stagger-2">
+      <div class="program-thumb">
+        <div class="program-thumb-bg mobility">🧘</div>
+        <span class="tag tag-white" style="position:absolute;top:16px;left:16px;">New</span>
+        <span class="tag tag-dark" style="position:absolute;bottom:16px;right:16px;">18 lessons</span>
+      </div>
+      <div class="program-body">
+        <h3>Pain-Free Back & Hips</h3>
+        <p>Relieve chronic lower back and hip tightness with progressive 15-min routines.</p>
+      </div>
+    </a>
+    <a href="programs.html" class="program-card-home scroll-reveal stagger-3">
+      <div class="program-thumb">
+        <div class="program-thumb-bg strength">💪</div>
+        <span class="tag tag-white" style="position:absolute;top:16px;left:16px;">Advanced</span>
+        <span class="tag tag-dark" style="position:absolute;bottom:16px;right:16px;">32 lessons</span>
+      </div>
+      <div class="program-body">
+        <h3>Power & Distance</h3>
+        <p>Build rotational strength and explosive power to maximize clubhead speed.</p>
+      </div>
+    </a>
+  </div>
+  <div class="view-all-row scroll-reveal">
+    <a href="programs.html" class="btn btn-outline">View All Programs →</a>
+  </div>
+</section>
+
+<!-- ─── CTA ─── -->
+<section class="cta-section">
+  <div class="section-label" style="color: var(--green-light);">Ready to Move Better?</div>
+  <h2 class="section-title scroll-reveal">Start Your 7-Day Free Trial Today</h2>
+  <p class="section-subtitle scroll-reveal">No credit card required. Just better movement, less pain, and a better game — from home.</p>
+  <div class="cta-buttons scroll-reveal">
+    <a href="#" class="btn btn-accent" onclick="openModal()">Start Free Trial →</a>
+    <a href="programs.html" class="btn btn-white">Explore Programs</a>
+  </div>
+</section>
+
+<!-- ─── FOOTER ─── -->
+<footer>
+  <div class="footer-grid">
+    <div class="footer-brand">
+      <a href="index.html" class="logo">
+        <svg class="logo-icon" viewBox="0 0 44 44" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="22" cy="20" r="13" fill="#2d6a4f"/>
+          <circle cx="19" cy="17" r="1.2" fill="#52b788" opacity="0.5"/><circle cx="23" cy="15" r="1.2" fill="#52b788" opacity="0.5"/>
+          <circle cx="21" cy="21" r="1.2" fill="#52b788" opacity="0.5"/><circle cx="25" cy="19" r="1.2" fill="#52b788" opacity="0.5"/>
+          <path d="M8 32 C12 28, 16 27, 22 28" stroke="#52b788" stroke-width="2" fill="none" stroke-linecap="round"/>
+          <path d="M11 36 C15 32, 20 31, 28 32" stroke="#c9a84c" stroke-width="2" fill="none" stroke-linecap="round" opacity="0.7"/>
+        </svg>
+        <div><div class="logo-text">FlowGolf</div><div class="logo-tagline">Move Better, Play Better</div></div>
+      </a>
+      <p>Expert mobility and fitness training designed specifically for golfers.</p>
+    </div>
+    <div class="footer-column">
+      <h4>Programs</h4>
+      <ul>
+        <li><a href="programs.html">Golf Mobility</a></li>
+        <li><a href="programs.html">Pain Relief</a></li>
+        <li><a href="programs.html">Power & Distance</a></li>
+        <li><a href="programs.html">Recovery</a></li>
+      </ul>
+    </div>
+    <div class="footer-column">
+      <h4>Company</h4>
+      <ul>
+        <li><a href="about.html">About</a></li>
+        <li><a href="about.html">Coaches</a></li>
+        <li><a href="about.html">Blog</a></li>
+        <li><a href="about.html">Contact</a></li>
+      </ul>
+    </div>
+    <div class="footer-column">
+      <h4>Account</h4>
+      <ul>
+        <li><a href="account.html">Dashboard</a></li>
+        <li><a href="pricing.html">Pricing</a></li>
+        <li><a href="#">Help Center</a></li>
+        <li><a href="#">Privacy Policy</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <span>&copy; 2026 FlowGolf. All rights reserved.</span>
+    <span>Made with 💚 for golfers who want to move better.</span>
+  </div>
+</footer>
+
+<!-- ─── MODAL ─── -->
+<div class="modal-overlay" id="modal">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal()">✕</button>
+    <h2>Start Your Free Trial</h2>
+    <p>7 days free, then choose a plan. No credit card needed.</p>
+    <div class="form-group"><label>Full Name</label><input type="text" placeholder="John Smith"></div>
+    <div class="form-group"><label>Email</label><input type="email" placeholder="john@example.com"></div>
+    <div class="form-group"><label>Your Goal</label>
+      <select>
+        <option>Reduce pain & stiffness</option>
+        <option>Increase driving distance</option>
+        <option>Improve flexibility</option>
+        <option>Full game improvement</option>
+      </select>
+    </div>
+    <div class="form-group"><label>Plan</label>
+      <select>
+        <option>Pro — $24/month (Most Popular)</option>
+        <option>Starter — $9/month</option>
+        <option>Elite — $59/month</option>
+      </select>
+    </div>
+    <a href="account.html" class="btn btn-primary">Create Account →</a>
+  </div>
+</div>
+
+<script src="scripts.js"></script>
+</body>
+</html>
